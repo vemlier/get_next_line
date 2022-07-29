@@ -27,6 +27,7 @@ libft와 같은 규칙이다. 아마 앞으로도 계속 만나게 될 것이다
   
 ## 4. 함수
 -----
+|---|---|
 |Function name|get_next_line|
 |prototype|char *get_next_line(int fd);|
 |Turn in files|get_next_line.c, get_next_line_utils.c, get_next_line.h|

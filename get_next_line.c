@@ -3,69 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chukim <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: chukim <chukim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/31 02:30:53 by chukim            #+#    #+#             */
-/*   Updated: 2021/12/31 05:06:16 by chukim           ###   ########.fr       */
+/*   Updated: 2022/08/07 01:22:27 by chukim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-ssize_t	read_file(int fd, char **buffer, char **current, char **line);
-char	*output(char **current, char **line);
-
-char	*get_next_line(int fd)
-{
-	static char	*current = NULL;
-	char		*buffer;
-	char		*line;
-	ssize_t		n;
-
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (buffer == NULL)
-		return (NULL);
-	if (read(fd, buffer, 0) < 0)
-	{
-		free(buffer);
-		return (NULL);
-	}
-	if (current == NULL)
-		current = ft_strdup("");
-	n = read_file(fd, &buffer, &current, &line);
-	if (n == 0 && line == NULL)
-		return (NULL);
-	return (line);
-}
-
-ssize_t	read_file(int fd, char **buffer, char **current, char **line)
-{
-	char	*temp;
-	ssize_t	n;
-
-	n = 1;
-	while ((ft_strchr(*current, '\n') == NULL) && n)
-	{
-		n = read(fd, *buffer, BUFFER_SIZE);
-		(*buffer)[n] = '\0';
-		temp = *current;
-		*current = ft_strjoin(temp, *buffer);
-		free(temp);
-	}
-	free(*buffer);
-	*buffer = NULL;
-	*current = output(current, line);
-	if (**line == '\0')
-	{
-		free(*line);
-		*line = NULL;
-	}
-	return (n);
-}
-
-char	*output(char **current, char **line)
+char	*output(t_arg *arg, char **current)
 {
 	size_t	i;
 	char	*buffer;
@@ -77,12 +24,73 @@ char	*output(char **current, char **line)
 	if (*(*current + i) == '\n')
 	{
 		i++;
-		*line = ft_substr(*current, 0, i);
+		arg->line = ft_substr(*current, 0, i);
 		buffer = ft_strdup(*current + i);
 	}
 	else
-		*line = ft_strdup(*current);
+		arg->line = ft_strdup(*current);
 	free(*current);
 	*current = NULL;
 	return (buffer);
+}
+
+ssize_t	read_file(int fd, t_arg *arg, char **current)
+{
+	char	*temp;
+	ssize_t	n;
+
+	n = 1;
+	while ((ft_strchr(*current, '\n') == NULL) && n) // current 안에 개행이 있거나, 0을 read하면 반복 종료
+	{
+		n = read(fd, arg->buffer, BUFFER_SIZE);
+		(arg->buffer)[n] = '\0';
+		temp = *current;
+		*current = ft_strjoin(temp, arg->buffer); // current에 반환할 문자열만큼 저장
+		free(temp);
+	}
+	free(arg->buffer);
+	arg->buffer = NULL;
+	*current = output(arg, current);
+	if (*arg->line == '\0')
+	{
+		free(arg->line);
+		arg->line = NULL;
+	}
+	return (n);
+}
+
+char	*get_next_line(int fd) // 정상일 때, 파일 1줄을 반환, 오류일 때, NULL을 반환
+{
+	static char	*current = NULL;
+	t_arg		*arg;
+	char		*result;
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	arg = (t_arg *)malloc(1 * sizeof(t_arg));
+	arg->buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (arg->buffer == NULL)
+	{
+		free(arg);
+		return (NULL);
+	}
+	if (read(fd, arg->buffer, 0) < 0) // 유효한 fd인지 확인 read(fd, buffer, 0)은 파일스트림을 움직이지 않음.
+	{
+		free(arg->buffer);
+		free(arg);
+		return (NULL);
+	}
+	if (current == NULL)
+		current = ft_strdup("");
+	arg->n = read_file(fd, arg, &current);
+	if (arg->n == 0 && arg->line == NULL)
+	{
+		// system("leaks a.out > leaks_result; cat leaks_result | grep leaked && rm -rf leaks_result");
+		free(arg);
+		return (NULL);
+	}
+	// system("leaks a.out > leaks_result; cat leaks_result | grep leaked && rm -rf leaks_result");
+	result = arg->line;
+	free(arg);
+	return (result);
 }

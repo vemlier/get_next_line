@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: chukim <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: chukim <chukim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/31 02:27:12 by chukim            #+#    #+#             */
-/*   Updated: 2021/12/31 05:07:39 by chukim           ###   ########.fr       */
+/*   Updated: 2022/08/06 02:06:46 by chukim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,13 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10000
 # endif
+
+typedef struct s_arg
+{
+	char		*buffer;
+	char		*line;
+	ssize_t		n;
+}	t_arg;
 
 char	*get_next_line(int fd);
 

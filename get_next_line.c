@@ -6,13 +6,13 @@
 /*   By: chukim <chukim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/31 02:30:53 by chukim            #+#    #+#             */
-/*   Updated: 2022/08/07 01:29:05 by chukim           ###   ########.fr       */
+/*   Updated: 2022/08/07 02:42:08 by chukim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*output(t_arg *arg, char **current)
+char	*ft_cut_line(t_arg *arg, char **current)
 {
 	size_t	i;
 	char	*buffer;
@@ -34,7 +34,7 @@ char	*output(t_arg *arg, char **current)
 	return (buffer);
 }
 
-ssize_t	read_file(int fd, t_arg *arg, char **current)
+ssize_t	ft_read_line(int fd, t_arg *arg, char **current) // fd를 한 줄씩 읽어 arg->line에 저장
 {
 	char	*temp;
 	ssize_t	n;
@@ -50,7 +50,7 @@ ssize_t	read_file(int fd, t_arg *arg, char **current)
 	}
 	free(arg->buffer);
 	arg->buffer = NULL;
-	*current = output(arg, current);
+	*current = ft_cut_line(arg, current);
 	if (*arg->line == '\0')
 	{
 		free(arg->line);
@@ -82,7 +82,7 @@ char	*get_next_line(int fd) // 정상일 때, 파일 1줄을 반환, 오류일 �
 	}
 	if (current == NULL)
 		current = ft_strdup("");
-	arg->n = read_file(fd, arg, &current);
+	arg->n = ft_read_line(fd, arg, &current);
 	if (arg->n == 0 && arg->line == NULL)
 	{
 		free(arg);

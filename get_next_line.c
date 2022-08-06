@@ -6,7 +6,7 @@
 /*   By: chukim <chukim@student.42seoul.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/31 02:30:53 by chukim            #+#    #+#             */
-/*   Updated: 2022/08/07 01:22:27 by chukim           ###   ########.fr       */
+/*   Updated: 2022/08/07 01:29:05 by chukim           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,9 @@ char	*get_next_line(int fd) // 정상일 때, 파일 1줄을 반환, 오류일 �
 	arg->n = read_file(fd, arg, &current);
 	if (arg->n == 0 && arg->line == NULL)
 	{
-		// system("leaks a.out > leaks_result; cat leaks_result | grep leaked && rm -rf leaks_result");
 		free(arg);
 		return (NULL);
 	}
-	// system("leaks a.out > leaks_result; cat leaks_result | grep leaked && rm -rf leaks_result");
 	result = arg->line;
 	free(arg);
 	return (result);
